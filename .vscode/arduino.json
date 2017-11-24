@@ -1,0 +1,7 @@
+{
+    "sketch": "gps_logger.ino",
+    "board": "espressif:esp32:esp32",
+    "configuration": "FlashFreq=80,UploadSpeed=921600,DebugLevel=none",
+    "port": "COM13",
+    "output": "./build"
+}
