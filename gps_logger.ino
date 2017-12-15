@@ -145,8 +145,18 @@ void loop() {
         display.drawString(64, 24, String(spdMax, 1)); 
 
         display.drawString(0, 36, "Dst:");
-        display.drawString(26, 36, String(dist, 1));
-        display.drawString(64, 36, String(distMax, 1));
+
+        if (dist < 10000) {
+            display.drawString(26, 36, String(dist, 1));
+        } else {
+            display.drawString(26, 36, String(dist / 1000, 1)); //in km
+        }
+        
+        if (distMax < 10000) {
+            display.drawString(64, 36, String(distMax, 1));
+        } else {
+            display.drawString(64, 36, String(distMax / 1000, 1)); //in km
+        }
 
         display.display();
 
