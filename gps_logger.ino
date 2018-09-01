@@ -1,11 +1,15 @@
 #include <TinyGPS++.h>
 #include <HardwareSerial.h>
 #include "EEPROM.h"
+#include "tactile.h"
 
 #include <Wire.h>
 #include "SSD1306.h"
 
 #define PIN_BUTTON 0
+
+Tactile button0(PIN_BUTTON);
+
 #define EEPROM_SIZE 8
 
 #define OLED_ADDR 0x3C
@@ -31,9 +35,10 @@ uint32_t nextSerialTaskTs = 0;
 uint32_t nextOledTaskTs = 0;
 
 void setup() {
+
     Serial.begin(115200);
     SerialGPS.begin(9600, SERIAL_8N1, 16, 17);
-    pinMode(PIN_BUTTON, INPUT_PULLUP);
+    button0.start();
 
     while (!EEPROM.begin(EEPROM_SIZE)) {
         true;
@@ -69,11 +74,10 @@ template <class T> int EEPROM_readAnything(int ee, T& value)
 }
 
 void loop() {
-    uint8_t button = digitalRead(PIN_BUTTON);
-    static uint8_t buttonPrevious;
+    button0.loop();
 
     // Store new origin point
-    if (button == LOW && buttonPrevious == HIGH) {
+    if (button0.getState() == TACTILE_STATE_LONG_PRESS) {
         originLat = gps.location.lat();
         originLon = gps.location.lng();
 
@@ -88,8 +92,6 @@ void loop() {
         altMax = 0;
         spdMax = 0;
     }
-
-    buttonPrevious = button;
 
     while (SerialGPS.available() > 0) {
         gps.encode(SerialGPS.read());
