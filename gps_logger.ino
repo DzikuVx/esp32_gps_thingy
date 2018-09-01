@@ -5,6 +5,7 @@
 
 #include <Wire.h>
 #include "SSD1306.h"
+#include "oled_display.h"
 
 #define PIN_BUTTON 0
 
@@ -18,11 +19,13 @@ Tactile button0(PIN_BUTTON);
 
 TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
-SSD1306  display(OLED_ADDR, OLED_SDA, OLED_SCL);
+SSD1306 display(OLED_ADDR, OLED_SDA, OLED_SCL);
+OledDisplay oledDisplay(&display);
 
 double originLat = 0;
 double originLon = 0; 
 double distMax = 0;
+double dist = 0;
 double altMax = 0;
 double spdMax = 0;
 
@@ -51,8 +54,8 @@ void setup() {
     EEPROM_readAnything(4, readValue);
     originLon = (double)readValue / 1000000;
 
-    display.init();
-
+    oledDisplay.init();
+    oledDisplay.page(OLED_PAGE_STATS);
 }
 
 template <class T> int EEPROM_writeAnything(int ee, const T& value)
@@ -97,8 +100,6 @@ void loop() {
         gps.encode(SerialGPS.read());
     }
 
-    double dist = 0;
-
     if (gps.satellites.value() > 4) {
         dist = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), originLat, originLon);
 
@@ -129,40 +130,6 @@ void loop() {
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
 
-    if (nextOledTaskTs < millis()) {
-
-        display.clear();
-        display.setFont(ArialMT_Plain_10);
-
-        display.drawString(0, 0, "Sat:");
-        display.drawString(26, 0, String(gps.satellites.value()));
-
-        display.drawString(0, 12, "Alt:");      
-        display.drawString(26, 12, String(gps.altitude.meters(), 1));
-        display.drawString(64, 12, String(altMax, 1));        
-
-
-        display.drawString(0, 24, "Spd:");
-        display.drawString(26, 24, String(gps.speed.mps(), 1));
-        display.drawString(64, 24, String(spdMax, 1)); 
-
-        display.drawString(0, 36, "Dst:");
-
-        if (dist < 10000) {
-            display.drawString(26, 36, String(dist, 1));
-        } else {
-            display.drawString(26, 36, String(dist / 1000, 1)); //in km
-        }
-        
-        if (distMax < 10000) {
-            display.drawString(64, 36, String(distMax, 1));
-        } else {
-            display.drawString(64, 36, String(distMax / 1000, 1)); //in km
-        }
-
-        display.display();
-
-        nextOledTaskTs = millis() + TASK_OLED_RATE;
-    }
+    oledDisplay.loop();
 
 }
