@@ -10,7 +10,8 @@ enum txOledPages {
     OLED_PAGE_SPEED
 };
 
-#define OLED_PAGE_COUNT 2
+#define OLED_COL_COUNT 64
+#define OLED_DISPLAY_PAGE_COUNT 2
 
 extern TinyGPSPlus gps;
 extern double originLat;
@@ -20,7 +21,7 @@ extern double dist;
 extern double altMax;
 extern double spdMax;
 
-const uint8_t pageSequence[OLED_PAGE_COUNT] = {
+const uint8_t pageSequence[OLED_DISPLAY_PAGE_COUNT] = {
     OLED_PAGE_STATS,
     OLED_PAGE_SPEED
 };
@@ -38,6 +39,7 @@ class OledDisplay {
         void renderPageSpeed();
         uint8_t _page = OLED_PAGE_NONE;
         uint8_t _mainPageSequenceIndex = 0;
+        bool _forceDisplay = false;
 };
 
 

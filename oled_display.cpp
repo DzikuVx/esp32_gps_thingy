@@ -1,4 +1,5 @@
 #include "oled_display.h"
+#include "Arduino.h"
 
 OledDisplay::OledDisplay(SSD1306 *display) {
     _display = display;
@@ -12,14 +13,23 @@ void OledDisplay::loop() {
     page(pageSequence[_mainPageSequenceIndex]);
 }
 
+void OledDisplay::nextPage() {
+    _mainPageSequenceIndex++;
+    if (_mainPageSequenceIndex == OLED_DISPLAY_PAGE_COUNT) {
+        _mainPageSequenceIndex = 0;
+    }
+}
+
 void OledDisplay::page(uint8_t page) {
 
     static uint32_t lastUpdate = 0;
 
     //Do not allow for OLED to be updated too often
-    if (lastUpdate > 0 && millis() - lastUpdate < 200) {
+    if (lastUpdate > 0 && millis() - lastUpdate < 200 && _forceDisplay == false) {
         return;
     }
+
+    _forceDisplay = false;
 
     switch (page) {
         
@@ -69,5 +79,14 @@ void OledDisplay::renderPageStats() {
 }
 
 void OledDisplay::renderPageSpeed() {
+    _display->clear();
 
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 0, "Speed");
+
+    _display->setFont(ArialMT_Plain_24);
+
+    _display->drawString(0, 20, String(gps.speed.kmph(), 1) + " km/h");
+
+    _display->display();
 }

@@ -94,6 +94,8 @@ void loop() {
         distMax = 0;
         altMax = 0;
         spdMax = 0;
+    } else if (button0.getState() == TACTILE_STATE_SHORT_PRESS) {
+        oledDisplay.nextPage();
     }
 
     while (SerialGPS.available() > 0) {
