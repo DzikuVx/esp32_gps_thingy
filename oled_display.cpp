@@ -39,6 +39,9 @@ void OledDisplay::page(uint8_t page) {
         case OLED_PAGE_SPEED:
             renderPageSpeed();
             break;
+        case OLED_PAGE_ALTITUDE:
+            renderPageAltitude();
+        break;
     }
     _page = page;
 
@@ -54,8 +57,11 @@ void OledDisplay::renderPageStats() {
 
     _display->drawString(0, 12, "Alt:");      
     _display->drawString(26, 12, String(gps.altitude.meters(), 1));
-    _display->drawString(64, 12, String(altMax, 1));        
-
+    if (altMax > -999999) {
+        _display->drawString(64, 12, String(altMax, 1));        
+    } else {
+        _display->drawString(64, 12, "-");
+    }
 
     _display->drawString(0, 24, "Spd:");
     _display->drawString(26, 24, String(gps.speed.mps(), 1));
@@ -80,9 +86,9 @@ void OledDisplay::renderPageStats() {
 
 void OledDisplay::renderHeader(String title) {
     _display->setFont(ArialMT_Plain_10);
-    _display->drawString(0, 0, "Speed");
+    _display->drawString(0, 0, title);
 
-    _display->drawString(80, 0, String(gps.satellites.value()) + " sats");
+    _display->drawString(90, 0, String(gps.satellites.value()) + " sats");
 }
 
 void OledDisplay::renderPageSpeed() {
@@ -96,6 +102,31 @@ void OledDisplay::renderPageSpeed() {
 
     _display->setFont(ArialMT_Plain_10);
     _display->drawString(0, 54, "Max speed " + String(spdMax, 1) + " km/h");
+
+    _display->display();
+}
+
+void OledDisplay::renderPageAltitude() {
+    _display->clear();
+
+    renderHeader("Abs. Altitude");
+
+    _display->setFont(ArialMT_Plain_24);
+    _display->drawString(0, 20, String(gps.altitude.meters(), 1) + " m");
+
+    _display->setFont(ArialMT_Plain_10);
+
+    if (altMin < 999999) {
+        _display->drawString(0, 54, "Min " + String(altMin, 1) + " m");    
+    } else {
+        _display->drawString(0, 54, "Min -");
+    }
+
+    if (altMax > -999999) {
+        _display->drawString(64, 54, "Max " + String(altMax, 1) + " m");
+    } else {
+        _display->drawString(64, 54, "Max -");
+    }
 
     _display->display();
 }

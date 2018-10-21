@@ -26,7 +26,8 @@ double originLat = 0;
 double originLon = 0; 
 double distMax = 0;
 double dist = 0;
-double altMax = 0;
+double altMax = -999999;
+double altMin = 999999;
 double spdMax = 0;
 
 double prevDist = 0;
@@ -117,6 +118,10 @@ void loop() {
 
         if (gps.speed.mps() > spdMax) {
             spdMax = gps.speed.mps();
+        }
+
+        if (gps.altitude.meters() < altMin) {
+            altMin = gps.altitude.meters();
         }
     }
 
