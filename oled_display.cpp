@@ -78,15 +78,24 @@ void OledDisplay::renderPageStats() {
     _display->display();
 }
 
+void OledDisplay::renderHeader(String title) {
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 0, "Speed");
+
+    _display->drawString(80, 0, String(gps.satellites.value()) + " sats");
+}
+
 void OledDisplay::renderPageSpeed() {
     _display->clear();
 
-    _display->setFont(ArialMT_Plain_10);
-    _display->drawString(0, 0, "Speed");
+    renderHeader("Speed");
 
     _display->setFont(ArialMT_Plain_24);
 
     _display->drawString(0, 20, String(gps.speed.kmph(), 1) + " km/h");
+
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 54, "Max speed " + String(spdMax, 1) + " km/h");
 
     _display->display();
 }

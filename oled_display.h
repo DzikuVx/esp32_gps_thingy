@@ -37,6 +37,7 @@ class OledDisplay {
         SSD1306 *_display;
         void renderPageStats();
         void renderPageSpeed();
+        void renderHeader(String title);
         uint8_t _page = OLED_PAGE_NONE;
         uint8_t _mainPageSequenceIndex = 0;
         bool _forceDisplay = false;
