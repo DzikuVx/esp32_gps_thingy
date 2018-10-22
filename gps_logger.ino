@@ -11,7 +11,7 @@
 
 Tactile button0(PIN_BUTTON);
 
-#define EEPROM_SIZE 8
+#define EEPROM_SIZE 128
 
 #define OLED_ADDR 0x3C
 #define OLED_SDA 4
@@ -24,6 +24,7 @@ OledDisplay oledDisplay(&display);
 
 double originLat = 0;
 double originLon = 0; 
+double originAlt = 0;
 double distMax = 0;
 double dist = 0;
 double altMax = -999999;
@@ -55,6 +56,9 @@ void setup() {
     EEPROM_readAnything(4, readValue);
     originLon = (double)readValue / 1000000;
 
+    EEPROM_readAnything(8, readValue);
+    originAlt = (double)readValue / 1000000;
+
     oledDisplay.init();
     oledDisplay.page(OLED_PAGE_STATS);
 }
@@ -84,17 +88,21 @@ void loop() {
     if (button0.getState() == TACTILE_STATE_LONG_PRESS) {
         originLat = gps.location.lat();
         originLon = gps.location.lng();
+        originAlt = gps.altitude.meters();
 
         long writeValue;
         writeValue = originLat * 1000000;
         EEPROM_writeAnything(0, writeValue);
         writeValue = originLon * 1000000;
         EEPROM_writeAnything(4, writeValue);
+        writeValue = originAlt * 1000000;
+        EEPROM_writeAnything(8, writeValue);
         EEPROM.commit();
 
         distMax = 0;
-        altMax = 0;
+        altMax = -999999;
         spdMax = 0;
+        altMin = 999999;
     } else if (button0.getState() == TACTILE_STATE_SHORT_PRESS) {
         oledDisplay.nextPage();
     }
