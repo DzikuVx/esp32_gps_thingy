@@ -57,28 +57,28 @@ void OledDisplay::renderPageStats() {
 
     _display->drawString(0, 12, "Alt:");      
     _display->drawString(26, 12, String(gps.altitude.meters(), 1));
-    if (altMax > -999999) {
-        _display->drawString(64, 12, String(altMax, 1));        
+    if (gpsState.altMax > -999999) {
+        _display->drawString(64, 12, String(gpsState.altMax, 1));        
     } else {
         _display->drawString(64, 12, "-");
     }
 
     _display->drawString(0, 24, "Spd:");
     _display->drawString(26, 24, String(gps.speed.mps(), 1));
-    _display->drawString(64, 24, String(spdMax, 1)); 
+    _display->drawString(64, 24, String(gpsState.spdMax, 1)); 
 
     _display->drawString(0, 36, "Dst:");
 
-    if (dist < 10000) {
-        _display->drawString(26, 36, String(dist, 1));
+    if (gpsState.dist < 10000) {
+        _display->drawString(26, 36, String(gpsState.dist, 1));
     } else {
-        _display->drawString(26, 36, String(dist / 1000, 1)); //in km
+        _display->drawString(26, 36, String(gpsState.dist / 1000, 1)); //in km
     }
     
-    if (distMax < 10000) {
-        _display->drawString(64, 36, String(distMax, 1));
+    if (gpsState.distMax < 10000) {
+        _display->drawString(64, 36, String(gpsState.distMax, 1));
     } else {
-        _display->drawString(64, 36, String(distMax / 1000, 1)); //in km
+        _display->drawString(64, 36, String(gpsState.distMax / 1000, 1)); //in km
     }
 
     _display->display();
@@ -101,7 +101,7 @@ void OledDisplay::renderPageSpeed() {
     _display->drawString(0, 20, String(gps.speed.kmph(), 1) + " km/h");
 
     _display->setFont(ArialMT_Plain_10);
-    _display->drawString(0, 54, "Max speed " + String(spdMax, 1) + " km/h");
+    _display->drawString(0, 54, "Max speed " + String(gpsState.spdMax, 1) + " km/h");
 
     _display->display();
 }
@@ -116,14 +116,14 @@ void OledDisplay::renderPageAltitude() {
 
     _display->setFont(ArialMT_Plain_10);
 
-    if (altMin < 999999) {
-        _display->drawString(0, 54, "Min " + String(altMin, 1) + " m");    
+    if (gpsState.altMin < 999999) {
+        _display->drawString(0, 54, "Min " + String(gpsState.altMin, 1) + " m");    
     } else {
         _display->drawString(0, 54, "Min -");
     }
 
-    if (altMax > -999999) {
-        _display->drawString(64, 54, "Max " + String(altMax, 1) + " m");
+    if (gpsState.altMax > -999999) {
+        _display->drawString(64, 54, "Max " + String(gpsState.altMax, 1) + " m");
     } else {
         _display->drawString(64, 54, "Max -");
     }
