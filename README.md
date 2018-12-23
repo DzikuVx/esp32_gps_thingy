@@ -24,5 +24,6 @@ More about this device is available [here](https://www.youtube.com/watch?v=ebBtE
 
 # Dependencies
 
-* https://github.com/espressif/arduino-esp32 at version 706bf48708e6668077187ba3f5543d0f7b49e132 . Version of 23cf233ecad1121d56a3a93adbb9de2e5889e665 is not working for unknown reason, will investigate
-* TinyGPS++ library: http://arduiniana.org/libraries/tinygpsplus/ https://github.com/mikalhart/TinyGPSPlus
+* [Arduino ESP32 core](https://github.com/espressif/arduino-esp32)
+* [TinyGPS++ library](http://arduiniana.org/libraries/tinygpsplus/) or [GitHub](https://github.com/mikalhart/TinyGPSPlus)
+* [QmuTactile library](https://github.com/DzikuVx/QmuTactile)
