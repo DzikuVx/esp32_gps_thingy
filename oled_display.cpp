@@ -41,7 +41,10 @@ void OledDisplay::page(uint8_t page) {
             break;
         case OLED_PAGE_ALTITUDE:
             renderPageAltitude();
-        break;
+            break;
+        case OLED_PAGE_RELATIVE_ALTITUDE:
+            renderPageRelativeAltitude();
+            break;
     }
     _page = page;
 
@@ -124,6 +127,31 @@ void OledDisplay::renderPageAltitude() {
 
     if (gpsState.altMax > -999999) {
         _display->drawString(64, 54, "Max " + String(gpsState.altMax, 1) + " m");
+    } else {
+        _display->drawString(64, 54, "Max -");
+    }
+
+    _display->display();
+}
+
+void OledDisplay::renderPageRelativeAltitude() {
+    _display->clear();
+
+    renderHeader("Rel. Altitude");
+
+    _display->setFont(ArialMT_Plain_24);
+    _display->drawString(0, 20, String(gps.altitude.meters() - gpsState.originAlt, 1) + " m");
+
+    _display->setFont(ArialMT_Plain_10);
+
+    if (gpsState.altMin < 999999) {
+        _display->drawString(0, 54, "Min " + String(gpsState.altMin - gpsState.originAlt, 1) + " m");    
+    } else {
+        _display->drawString(0, 54, "Min -");
+    }
+
+    if (gpsState.altMax > -999999) {
+        _display->drawString(64, 54, "Max " + String(gpsState.altMax - gpsState.originAlt, 1) + " m");
     } else {
         _display->drawString(64, 54, "Max -");
     }
