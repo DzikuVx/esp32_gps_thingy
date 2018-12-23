@@ -1,7 +1,7 @@
 #include <TinyGPS++.h>
 #include <HardwareSerial.h>
 #include "EEPROM.h"
-#include "tactile.h"
+#include "QmuTactile.h"
 
 #include <Wire.h>
 #include "SSD1306.h"
@@ -9,7 +9,7 @@
 
 #define PIN_BUTTON 0
 
-Tactile button0(PIN_BUTTON);
+QmuTactile button0(PIN_BUTTON);
 
 #define EEPROM_SIZE 128
 
