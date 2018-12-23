@@ -1,3 +1,4 @@
+#include "types.h"
 #include <TinyGPS++.h>
 #include <HardwareSerial.h>
 #include "EEPROM.h"
@@ -22,16 +23,7 @@ HardwareSerial SerialGPS(1);
 SSD1306 display(OLED_ADDR, OLED_SDA, OLED_SCL);
 OledDisplay oledDisplay(&display);
 
-double originLat = 0;
-double originLon = 0; 
-double originAlt = 0;
-double distMax = 0;
-double dist = 0;
-double altMax = -999999;
-double altMin = 999999;
-double spdMax = 0;
-
-double prevDist = 0;
+GpsDataState_t gpsState = {};
 
 #define TASK_OLED_RATE 200
 #define TASK_SERIAL_RATE 500
@@ -51,13 +43,13 @@ void setup() {
 
     long readValue; 
     EEPROM_readAnything(0, readValue);
-    originLat = (double)readValue / 1000000;
+    gpsState.originLat = (double)readValue / 1000000;
 
     EEPROM_readAnything(4, readValue);
-    originLon = (double)readValue / 1000000;
+    gpsState.originLon = (double)readValue / 1000000;
 
     EEPROM_readAnything(8, readValue);
-    originAlt = (double)readValue / 1000000;
+    gpsState.originAlt = (double)readValue / 1000000;
 
     oledDisplay.init();
     oledDisplay.page(OLED_PAGE_STATS);
@@ -86,23 +78,23 @@ void loop() {
 
     // Store new origin point
     if (button0.getState() == TACTILE_STATE_LONG_PRESS) {
-        originLat = gps.location.lat();
-        originLon = gps.location.lng();
-        originAlt = gps.altitude.meters();
+        gpsState.originLat = gps.location.lat();
+        gpsState.originLon = gps.location.lng();
+        gpsState.originAlt = gps.altitude.meters();
 
         long writeValue;
-        writeValue = originLat * 1000000;
+        writeValue = gpsState.originLat * 1000000;
         EEPROM_writeAnything(0, writeValue);
-        writeValue = originLon * 1000000;
+        writeValue = gpsState.originLon * 1000000;
         EEPROM_writeAnything(4, writeValue);
-        writeValue = originAlt * 1000000;
+        writeValue = gpsState.originAlt * 1000000;
         EEPROM_writeAnything(8, writeValue);
         EEPROM.commit();
 
-        distMax = 0;
-        altMax = -999999;
-        spdMax = 0;
-        altMin = 999999;
+        gpsState.distMax = 0;
+        gpsState.altMax = -999999;
+        gpsState.spdMax = 0;
+        gpsState.altMin = 999999;
     } else if (button0.getState() == TACTILE_STATE_SHORT_PRESS) {
         oledDisplay.nextPage();
     }
@@ -112,24 +104,24 @@ void loop() {
     }
 
     if (gps.satellites.value() > 4) {
-        dist = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), originLat, originLon);
+        gpsState.dist = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), gpsState.originLat, gpsState.originLon);
 
-        if (dist > distMax && abs(prevDist - dist) < 50) {
-            distMax = dist;
+        if (gpsState.dist > gpsState.distMax && abs(gpsState.prevDist - gpsState.dist) < 50) {
+            gpsState.distMax = gpsState.dist;
         }
 
-        prevDist = dist;
+        gpsState.prevDist = gpsState.dist;
 
-        if (gps.altitude.meters() > altMax) {
-            altMax = gps.altitude.meters();
+        if (gps.altitude.meters() > gpsState.altMax) {
+            gpsState.altMax = gps.altitude.meters();
         }
 
-        if (gps.speed.mps() > spdMax) {
-            spdMax = gps.speed.mps();
+        if (gps.speed.mps() > gpsState.spdMax) {
+            gpsState.spdMax = gps.speed.mps();
         }
 
-        if (gps.altitude.meters() < altMin) {
-            altMin = gps.altitude.meters();
+        if (gps.altitude.meters() < gpsState.altMin) {
+            gpsState.altMin = gps.altitude.meters();
         }
     }
 
@@ -140,7 +132,7 @@ void loop() {
         Serial.print("ALT=");  Serial.println(gps.altitude.meters());
         Serial.print("Sats=");  Serial.println(gps.satellites.value());
         Serial.print("DST: ");
-        Serial.println(dist,1);
+        Serial.println(gpsState.dist,1);
 
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }

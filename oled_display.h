@@ -1,6 +1,7 @@
 #ifndef OLED_DISPLAY
 #define OLED_DISPLAY
 
+#include "types.h"
 #include "SSD1306.h"
 #include <TinyGPS++.h>
 
@@ -15,13 +16,7 @@ enum txOledPages {
 #define OLED_DISPLAY_PAGE_COUNT 3
 
 extern TinyGPSPlus gps;
-extern double originLat;
-extern double originLon; 
-extern double distMax;
-extern double dist;
-extern double altMax;
-extern double spdMax;
-extern double altMin;
+extern GpsDataState_t gpsState;
 
 const uint8_t pageSequence[OLED_DISPLAY_PAGE_COUNT] = {
     OLED_PAGE_STATS,
