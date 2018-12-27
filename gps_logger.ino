@@ -26,7 +26,7 @@ OledDisplay oledDisplay(&display);
 GpsDataState_t gpsState = {};
 
 #define TASK_OLED_RATE 200
-#define TASK_SERIAL_RATE 500
+#define TASK_SERIAL_RATE 100
 
 uint32_t nextSerialTaskTs = 0;
 uint32_t nextOledTaskTs = 0;
@@ -76,6 +76,8 @@ template <class T> int EEPROM_readAnything(int ee, T& value)
 void loop() {
     button0.loop();
 
+    static int p0 = 0;
+
     // Store new origin point
     if (button0.getState() == TACTILE_STATE_LONG_PRESS) {
         gpsState.originLat = gps.location.lat();
@@ -97,7 +99,7 @@ void loop() {
         gpsState.altMin = 999999;
     } else if (button0.getState() == TACTILE_STATE_SHORT_PRESS) {
         oledDisplay.nextPage();
-    }
+    } 
 
     while (SerialGPS.available() > 0) {
         gps.encode(SerialGPS.read());
